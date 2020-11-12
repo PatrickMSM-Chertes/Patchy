@@ -1,4 +1,4 @@
 package tk.patsite.patchy;
 
-public class Java {
+public class Java {//yum
 }
