@@ -1,0 +1,24 @@
+#    _/_/_/                    _/                       _/
+#   _/    _/       _/_/_/   _/_/_/_/       _/_/_/      _/_/_/       _/    _/
+#  _/_/_/       _/    _/     _/         _/            _/    _/     _/    _/
+# _/           _/    _/     _/         _/            _/    _/     _/    _/
+#_/             _/_/_/       _/_/       _/_/_/      _/    _/       _/_/_/
+#                                                                     _/
+#                                                                _/_/
+
+# to reload, players will have to have a permission named "patchy.reload"
+# and will have to type the command "/patchyreload"
+
+#Patchy config v1.0
+
+#BookDupe patch
+
+#DO NOT GO OVER 100!!
+#25 is known to break bookdupes
+#do not go too low, players might not be able to write a normal book
+maxpages: 35
+
+
+
+#!! DO NOT CHANGE THIS !!
+v: 1.1

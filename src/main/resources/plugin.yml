@@ -1,0 +1,19 @@
+name: Patchy
+version: ${project.version}
+main: tk.patsite.patchy.Patchy
+api-version: 1.12
+prefix: Patchy
+authors: [PatrickMSM]
+description: Patches major dupe exploits
+website: patsite.tk
+commands:
+  patchyreload:
+    description: Reloads Patchy
+    aliases: [patchreload, phreload]
+    permission: patchy.reload
+    permission-message: You do not have permission!
+    usage: /<command>
+
+permissions:
+  patchy.reload:
+    description: Allows players to reload the config
