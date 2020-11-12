@@ -38,6 +38,7 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
 
+
         metric = new Metric(this, 9304);
         logfile = new Logfile(this, "log.txt");
         checker = new UpdateChecker(this, 85672);
