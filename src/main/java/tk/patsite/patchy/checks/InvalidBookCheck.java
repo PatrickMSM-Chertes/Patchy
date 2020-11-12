@@ -30,13 +30,7 @@ public final class InvalidBookCheck implements org.bukkit.event.Listener {
             e.getPlayer().sendMessage(ChatColor.RED + " You can not write more than " + maxPages + ". Book text cut off to " + maxPages + " pages.");
 
             //reset pages to max
-            List<String> pageList = new ArrayList<>();
-
-            for (int i = 1; i <= maxPages; i++) {
-                pageList.add(metaData.getPage(i));
-            }
-
-            metaData.setPages(pageList);
+            metaData.setPages(metaData.getPages().subList(0, maxPages));
 
             //add to metrics limited
 
