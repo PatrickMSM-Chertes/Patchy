@@ -9,11 +9,11 @@ import java.util.Objects;
 
 public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
 
-    final double configVersion = 1.0;
+    private final double configVersion = 1.2;
 
-    Metric metric;
-    Logfile logfile;
-    UpdateChecker checker;
+    private Metric metric;
+    private Logfile logfile;
+    private UpdateChecker checker;
 
     public Metric getMetric() {
         return metric;

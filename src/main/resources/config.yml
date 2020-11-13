@@ -19,6 +19,10 @@
 maxpages: 35
 
 
+# Too many donkeys that are waiting to be checked can fill up ram.
+# Time (in minutes) after donkeys will get checked and removed from the queue
+removeDonkeyChecksAfter: 60
+
 
 #!! DO NOT CHANGE THIS !!
-v: 1.1
+v: 1.2
