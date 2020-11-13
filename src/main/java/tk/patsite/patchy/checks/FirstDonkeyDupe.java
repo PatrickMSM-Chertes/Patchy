@@ -40,8 +40,8 @@ public final class FirstDonkeyDupe implements Listener {
 
         plugin.getMetric().addDrilldown("patched_type", "Donkey / Mule dupe 1");
 
-        plugin.getLogfile().info("Someone at " + buildLocString(loc) + "failed to do a donkey dupe type 1.");
-        plugin.getLogger().info(ChatColor.RED + "Someone at " + buildLocString(loc) + "failed to do a donkey dupe type 1.");
+        plugin.getLogfile().info("Someone at " + buildLocString(loc) + " failed to do a donkey dupe type 1.");
+        plugin.getLogger().info(ChatColor.RED + "Someone at " + buildLocString(loc) + " failed to do a donkey dupe type 1.");
 
     }
 
