@@ -1,18 +1,13 @@
 package tk.patsite.patchy;
 
 import org.bukkit.ChatColor;
-import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.PluginManager;
 import tk.patsite.patchy.checks.FirstDonkeyDupe;
 import tk.patsite.patchy.checks.InvalidBookCheck;
 
 import java.io.*;
-import java.util.List;
 import java.util.Objects;
 
 public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
-
-    private final double configVersion = 1.2;
 
     private Metric metric;
     private Logfile logfile;
@@ -30,21 +25,9 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
         return checker;
     }
 
-    PluginManager manager;
-    private List<Permission> permissions;
-
     @Override
     public void onEnable() {
         // Plugin startup logic
-
-        manager = getServer().getPluginManager();
-
-        //register perms
-        manager.addPermission(new Permission("patchy.reload"));
-
-        permissions.addAll(manager.getPermissions());
-
-
         metric = new Metric(this, 9304);
         logfile = new Logfile(this, "log.txt");
         checker = new UpdateChecker(this, 85672);
@@ -56,6 +39,7 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
 
         // check if outdated config
 
+        double configVersion = 1.2;
         if (getConfig().getDouble("v") != configVersion) {
             getLogger().info(ChatColor.RED + "Invalid Config! Refreshing default config..");
             //get the file
@@ -113,8 +97,5 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
     public void onDisable() {
         // to be safe
         saveConfig();
-
-        // remove perms
-        permissions.forEach(manager::removePermission);
     }
 }
