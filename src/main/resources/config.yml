@@ -14,7 +14,7 @@
 #BookDupe patch
 
 #DO NOT GO OVER 100!!
-#25 is known to break book dupes
+#25 is known to break bookdupes
 #do not go too low, players might not be able to write a normal book
 maxpages: 35
 
