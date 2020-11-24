@@ -1,7 +1,7 @@
 name: Patchy
 version: ${project.version}
 main: tk.patsite.patchy.Patchy
-api-version: 1.12
+api-version: 1.13
 prefix: Patchy
 authors: [PatrickMSM]
 description: Patches major dupe exploits

@@ -1,10 +1,13 @@
 package tk.patsite.patchy;
 
 import org.bukkit.ChatColor;
+import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.PluginManager;
 import tk.patsite.patchy.checks.FirstDonkeyDupe;
 import tk.patsite.patchy.checks.InvalidBookCheck;
 
 import java.io.*;
+import java.util.List;
 import java.util.Objects;
 
 public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
@@ -27,16 +30,19 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
         return checker;
     }
 
-    /*
-    Please go to InvalidBookCheck line 62
-    and complete logging for all
-    info
-     */
-
+    PluginManager manager;
+    private List<Permission> permissions;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        manager = getServer().getPluginManager();
+
+        //register perms
+        manager.addPermission(new Permission("patchy.reload"));
+
+        permissions.addAll(manager.getPermissions());
 
 
         metric = new Metric(this, 9304);
@@ -58,39 +64,40 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
             //delete old file asynchronously
 
             //noinspection ResultOfMethodCallIgnored
-            getServer().getScheduler().runTaskAsynchronously(this, file::delete);
+            file.delete();
 
             //create new file
-            getServer().getScheduler().runTaskAsynchronously(this, () -> {
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             //set contents of file
-            getServer().getScheduler().runTaskAsynchronously(this, () -> {
-                try {
-                    InputStream initialStream = getResource("config.yml");
-                    if (initialStream == null)
-                        return;
-                    byte[] buffer = new byte[initialStream.available()];
-                    //noinspection ResultOfMethodCallIgnored
-                    initialStream.read(buffer);
+            try {
+                InputStream initialStream = getResource("config.yml");
+                if (initialStream == null)
+                    return;
+                byte[] buffer = new byte[initialStream.available()];
+                //noinspection ResultOfMethodCallIgnored
+                initialStream.read(buffer);
 
-                    OutputStream outStream = new FileOutputStream(file);
-                    outStream.write(buffer);
+                OutputStream outStream = new FileOutputStream(file);
+                outStream.write(buffer);
 
-                    outStream.close();
-                    initialStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+                outStream.close();
+                initialStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            reloadConfig();
         }
 
+        getServer().getPluginManager().registerEvents(new InvalidBookCheck(this), this);
+        getServer().getPluginManager().registerEvents(new FirstDonkeyDupe(this), this);
+
+        Objects.requireNonNull(getCommand("patchyreload")).setExecutor(new Reload(this));
 
         getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
             if (checker.checkUpdate()) {
@@ -99,11 +106,6 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
             }
         });
 
-        getServer().getPluginManager().registerEvents(new InvalidBookCheck(this), this);
-        getServer().getPluginManager().registerEvents(new FirstDonkeyDupe(this), this);
-
-        Objects.requireNonNull(getCommand("patchyreload")).setExecutor(new Reload(this));
-
         getLogger().info("Enabled Patchy v1.0");
     }
 
@@ -111,5 +113,8 @@ public final class Patchy extends org.bukkit.plugin.java.JavaPlugin {
     public void onDisable() {
         // to be safe
         saveConfig();
+
+        // remove perms
+        permissions.forEach(manager::removePermission);
     }
 }
