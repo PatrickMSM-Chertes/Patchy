@@ -21,8 +21,8 @@ public final class Metric {
 
     public final void addDrilldown(String chartId, String what) {
         metricVar.addCustomChart(new Metrics.DrilldownPie(chartId, () -> {
-            Map<String, Map<String, Integer>> map = new HashMap<>();
-            Map<String, Integer> entry = new HashMap<>();
+            Map<String, Map<String, Integer>> map = new HashMap<>(1);
+            Map<String, Integer> entry = new HashMap<>(1);
             entry.put(what, 1);
             map.put(what, entry);
             return map;
