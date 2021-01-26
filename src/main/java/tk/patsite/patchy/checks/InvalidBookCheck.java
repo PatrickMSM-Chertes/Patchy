@@ -1,8 +1,12 @@
 package tk.patsite.patchy.checks;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerEditBookEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import tk.patsite.patchy.Patchy;
 
@@ -11,7 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class InvalidBookCheck implements org.bukkit.event.Listener {
-    List<String> strEmpty = new ArrayList<>();
+    List<String> strEmpty = new ArrayList<>(1);
+
+    {
+        strEmpty.add("");
+    }
 
     Patchy plugin;
 
@@ -20,14 +28,11 @@ public final class InvalidBookCheck implements org.bukkit.event.Listener {
     }
 
 
-    @EventHandler
-    public void patchBookSign(PlayerEditBookEvent e) {
-        BookMeta metaData = e.getNewBookMeta();
-
+    private BookMeta patch(BookMeta metaData, final Player player) {
         int maxPages = plugin.getConfig().getInt("maxpages", 50);
         //check for max book pages
         if (metaData.getPageCount() > maxPages) {
-            e.getPlayer().sendMessage(ChatColor.RED + " You can not write more than " + maxPages + ". Book text cut off to " + maxPages + " pages.");
+            player.sendMessage(ChatColor.RED + " You can not write more than " + maxPages + ". Book text cut off to " + maxPages + " pages.");
 
             //reset pages to max
             metaData.setPages(metaData.getPages().subList(0, maxPages));
@@ -37,10 +42,8 @@ public final class InvalidBookCheck implements org.bukkit.event.Listener {
             plugin.getMetric().addLine("action_limited", 1);
             plugin.getMetric().addDrilldown("patched_type", "Invalid Book / MaxPage");
 
-            e.setNewBookMeta(metaData);
-
-            plugin.getLogfile().info("Player " + e.getPlayer().getName() + " failed to save a book with over " + maxPages + " pages.");
-            plugin.getLogger().info(ChatColor.RED + "Player " + e.getPlayer().getName() + " failed to save a book with over " + maxPages + " pages.");
+            plugin.getLogfile().info("Player " + player + " failed to save a book with over " + maxPages + " pages.");
+            plugin.getLogger().info(ChatColor.RED + "Player " + player + " failed to save a book with over " + maxPages + " pages.");
 
 
         }
@@ -54,12 +57,10 @@ public final class InvalidBookCheck implements org.bukkit.event.Listener {
             if (incorrectCharset(page)) {
                 //incorrect charset
                 //clear pages
-                BookMeta meta = e.getNewBookMeta();
-                meta.setPages(strEmpty);
-                e.setNewBookMeta(meta);
+                metaData.setPages(strEmpty);
 
                 //send message
-                e.getPlayer().sendMessage(ChatColor.RED + "That book has an invalid format. Removing pages.");
+                player.sendMessage(ChatColor.RED + "That book has an invalid format. Removing pages.");
 
                 //add to metrics
                 plugin.getMetric().addLine("action_limited", 1);
@@ -67,10 +68,31 @@ public final class InvalidBookCheck implements org.bukkit.event.Listener {
                 //log
                 //!!
 
-                plugin.getLogfile().info("Player " + e.getPlayer().getName() + " failed to use an invalid character in a book.");
-                plugin.getLogger().info(ChatColor.RED + "Player " + e.getPlayer().getName() + " failed to use an invalid character in a book.");
+                plugin.getLogfile().info("Player " + player + " failed to use an invalid character in a book.");
+                plugin.getLogger().info(ChatColor.RED + "Player " + player + " failed to use an invalid character in a book.");
             }
         }
+        return metaData;
+    }
+
+
+    @EventHandler
+    public void patchBookMove(InventoryMoveItemEvent e) {
+        ItemStack item = e.getItem();
+        if (item.getType() != Material.WRITTEN_BOOK)
+            return;
+        if (e.getSource().getViewers().get(0) == null)
+            return;
+        if (item.getItemMeta() == null)
+            return;
+
+        item.setItemMeta(patch((BookMeta) item.getItemMeta(), (Player) e.getSource().getViewers().get(0)));
+    }
+
+
+    @EventHandler
+    public void patchBookSign(PlayerEditBookEvent e) {
+        e.setNewBookMeta(patch(e.getNewBookMeta(), e.getPlayer()));
     }
 
     private Boolean incorrectCharset(String text) {
